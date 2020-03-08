@@ -1,0 +1,6 @@
+/.venv/
+/build/
+/requester.egg-info/
+/dist/
+.idea/
+requester/__pycache__/

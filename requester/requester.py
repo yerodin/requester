@@ -9,11 +9,6 @@ import validators
 import cfscrape
 
 
-def main():
-    requester = Requester()
-    requester.download_resource()
-
-
 class Requester:
     def __init__(self):
         self._base64data = None
@@ -31,7 +26,7 @@ class Requester:
             content_type = self._get_base64data().get_content_type()
             if "image".lower() in content_type:
                 filename = filename + "." + content_type.split("/")[1]
-            data = base64.decodestring(self._get_base64data().get_data())
+            data = base64.decodebytes(self._get_base64data().get_data())
             data_length = len(data)
         else:
             response = self._get_request_maker().get(self.get_resource_url())
@@ -40,13 +35,13 @@ class Requester:
                 data = response.iter_content(1024)
                 data_length = len(response.content)
             else:
-                print >> sys.stderr, "Error: response code:" + str(response.status_code)
+                print("Error: response code:" + str(response.status_code), file=sys.stderr)
                 if response.status_code == 503:
-                    print "503.. Maybe try a firewall bypass method [-f | --firewall-bypass] basic "
+                    print("503.. Maybe try a firewall bypass method [-f | --firewall-bypass] basic ")
                 exit(1)
         with open(filename, 'wb') as f:
             current = 0
-            print "Downloading File:" + filename
+            print("Downloading File:" + filename)
             for block in data:
                 _print_download_status(current, data_length)
                 f.write(block)
@@ -108,15 +103,15 @@ class Requester:
         elif method is None:
             self._request_maker = session
         else:
-            print >> sys.stderr, "Error"
+            print("Error", file=sys.stderr)
 
     def _validate_resource_url(self):
         if " " in self._resource_url:
             self.print_usage()
-            print >> sys.stderr, "Error: Whitespaces are not alowed in a URL"
+            print("Error: Whitespaces are not alowed in a URL", file=sys.stderr)
             exit(1)
         if len(self._resource_url) == 0:
-            print "Warning: No URL specified"
+            print("Warning: No URL specified")
         if self.get_resource_url().lower().startswith("data"):
             self._base64 = True
             self._base64data = Base64data(self.get_resource_url().split(",", 1)[1])
@@ -124,7 +119,7 @@ class Requester:
             if len(content_type) > 0:
                 self._get_base64data().set_content_type(content_type)
         elif not validators.url(self.get_resource_url()):
-            print >> sys.stderr, "Error: Please specify a valid URI"
+            print("Error: Please specify a valid URI", file=sys.stderr)
             exit(1)
 
 
@@ -154,8 +149,4 @@ def _print_download_status(current, total):
 
 
 def random_filename():
-    return ''.join([chr(random.randint(65, 90)) for i in xrange(16)])
-
-
-if __name__ == '__main__':
-    main()
+    return ''.join([chr(random.randint(65, 90)) for _ in range(16)])
