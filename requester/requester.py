@@ -39,6 +39,8 @@ class Requester:
                 if response.status_code == 503:
                     print("503.. Maybe try a firewall bypass method [-f | --firewall-bypass] basic ")
                 exit(1)
+        if filename == '':
+            filename = random_filename()
         with open(filename, 'wb') as f:
             current = 0
             print("Downloading File:" + filename)
@@ -63,6 +65,8 @@ class Requester:
         if "Content-Type" in response.headers.keys():
             content_type = response.headers['content-type']
             extension = mimetypes.guess_extension(content_type.partition(';')[0].strip(), strict=False)
+        if extension is None:
+            return self.get_resource_url().split("/")[-1]
         if "Content-Disposition" in response.headers.keys():
             return re.findall("filename=(.+)", response.headers["Content-Disposition"])[0].replace(extension, "") + extension
         else:
