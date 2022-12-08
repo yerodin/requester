@@ -1,4 +1,4 @@
-certifi==2021.10.8
+certifi==2022.12.7
 cfscrape==2.1.1
 chardet==4.0.0
 decorator==5.1.1
